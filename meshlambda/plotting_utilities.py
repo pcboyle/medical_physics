@@ -126,6 +126,55 @@ def add_colorbar(axis, im, fig, aspect = 1, cbar_label = '', loc = 'right', orie
     return cbar
 
 def create_animation(file_name_pattern, framerate = 10, search_dir = os.getcwd(), outdir = os.getcwd(), video_name = 'output', video_format = 'mp4', overwrite = True):
+    """
+    Function that renders a video from a set of images based on a file name pattern. 
+    
+    Uses ffmpeg and glob. 
+    
+    Parameters:
+    ----------
+    file_name_pattern: string
+        Glob search pattern used to find all files for video creation. 
+        File names should be of the form:
+            '<prefix>_%3d.png' 
+            where prefix is the plot prefixes and %3d is a 3 digit number corresponding 
+            to the frame number. 
+    
+    framerate: int
+        Frames per second of the final video. 
+        Default is 10. 
+        
+    search_dir: string
+        Directory to search for images in. 
+        Default is current working directory. 
+        
+    outdir: string
+        Directory to save the video in. 
+        Default is current working directory. 
+        
+    video_name: string
+        Name of the video. 
+        Default is 'output'.
+        
+    video_format: string
+        Format of the video. Options are any that ffmpeg can render. 
+        Default is mp4. 
+        
+    overwrite: Boolean
+        If True, will overwrite a video with the same filename and extension specified. 
+        If False, will prompt the user for a new filename. 
+        Default is True. 
+        
+    Outputs:
+    -------
+    None
+    
+    Saves:
+    -----
+    video: mp4 file
+        Rendered video using the specified settings. 
+    
+    """
     
     video_filename = '{0}.{1}'.format(video_name, video_format)
     video_path = os.path.join(outdir, video_filename)
