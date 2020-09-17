@@ -1667,7 +1667,7 @@ def plot_2d_histogram(x_data, y_data, x_label = 'X Data', y_label = 'Y Data', bi
                       x_ticks = None, x_ticklabels = None, y_ticks = None, y_ticklabels = None, 
                       cbar_label = 'Counts', image_text = None, image_title = 'Histogram'):
     """
-    Function to plot a 2D histogram. 
+    Function to plot a 2D histogram using two 2D numpy arrays. 
     
     Uses np.histogram2d.
     
@@ -1771,17 +1771,107 @@ def plot_2d_histogram(x_data, y_data, x_label = 'X Data', y_label = 'Y Data', bi
     return 
 
 def save_2d_histogram_sequence(x_data_volume, y_data_volume, image_title = 'Histogram',
-                            x_label = 'X Data', y_label = 'Y Data', bins = 10, vmax = 25,
-                            x_ticks = None, x_ticklabels = None, y_ticks = None, y_ticklabels = None,
-                            cbar_label = 'Counts', animate = True, animate_only = False, 
-                            outdir = os.getcwd(), file_name = 'histogram'):
+                               x_label = 'X Data', y_label = 'Y Data', bins = 10, vmax = 25,
+                               x_ticks = None, x_ticklabels = None, y_ticks = None, y_ticklabels = None,
+                               cbar_label = 'Counts', animate = True, animate_only = False, 
+                               outdir = os.getcwd(), prefix = 'histogram'):
     """
+    Function to save a sequence of 2D histograms using two 3D numpy arrays.    
     
+    Uses plot_2d_histogram and create_animation.
+    
+    Uses fig.canvas.print_figure(plot_path, facecolor = 'white', edgecolor = 'white') to save images. 
+    
+    Parameters:
+    ----------
+    x_data_volume: Numpy array
+        3D array for the x direction. 
+        
+    y_data_volume: Numpy array
+        3D array for the y direction. 
+        
+    image_title: string
+        Title of the figure. 
+        Default is 'Histogram'.
+        
+    x_label: string
+        X axis label. 
+        Default is 'X Data'.
+        
+    y_label: string
+        Y axis label. 
+        Default is 'Y Data'.
+        
+    bins: int or list conforming to histogram function
+        Number of bins or bin edges for each of the dimensions. 
+        Default is 10. 
+        
+    vmax: float or int
+        Maximum value of the colormap. 
+        Default is 25.
+        
+    x_ticks: None or list
+        List of tick locations for the x axis. 
+        If None, no ticks will be drawn. 
+        Default is None. 
+        
+    x_ticklabels: None or list
+        List of tick labels for the x axis. 
+        If None, no ticks will have labels. 
+        Default is None. 
+        
+    y_ticks: None or list
+        List of tick locations for the y axis. 
+        If None, no ticks will be drawn. 
+        Default is None. 
+        
+    y_ticklabels: None or list
+        List of tick labels for the y axis. 
+        If None, no ticks will have labels. 
+        Default is None. 
+        
+    cbar_label: string
+        Label of the colorbar. 
+        Default is 'Counts'. 
+        
+    image_text: None or string
+        Text to appear on the histogram. 
+        If None, no text will be applied. 
+        Default is None. 
+        
+    animate: Boolean
+        If True, will create an animation of the sequence. 
+        Default is True. 
+        
+    animate_only: Boolean
+        If True, will use parameters entered to create an
+        animation using existing files. 
+        Default is False. 
+        
+    outdir: string
+        Output directory. 
+        Default is current working directory. 
+        
+    prefix: string
+        Prefix to use for naming files and for the video name. 
+        Default is 'histogram'.
+        
+    Outputs:
+    -------
+    None
+    
+    Saves:
+    ----- 
+    iamge files: png files
+        Histogram of each slice. File names are of form:
+            plot_filename = '{0}{1}.png'.format(image_prefix, plot_num)
+        where image_prefix is the sanitized prefix parameter and
+        plot_num is a zfilled number frame number. 
+        
     """ 
-    
     outdir = outdir_check(outdir)
     
-    image_prefix, folder = prefix_check(file_name)
+    image_prefix, folder = prefix_check(prefix)
     
     t_start = time.time()
     
@@ -1854,7 +1944,7 @@ def save_2d_histogram_sequence(x_data_volume, y_data_volume, image_title = 'Hist
         file_name_pattern = '{0}%0{1}d.png'.format(image_prefix, zfill_len)
         search_dir = outdir
         outdir = outdir
-        video_name = file_name
+        video_name = prefix
         
         create_animation(file_name_pattern, framerate = 10, search_dir = search_dir, outdir = outdir, 
                          video_name = video_name, video_format = 'mp4', overwrite = True)
@@ -1863,9 +1953,40 @@ def save_2d_histogram_sequence(x_data_volume, y_data_volume, image_title = 'Hist
 
 def save_multiple_histogram_sequences(parent_path, noise_levels = [0.00, 0.01, 0.02, 0.03], variables = ['lambda', 'theta'], animate = True):
     """
+    Function to save multiple histogram sequences for multiple variables. 
+    
+    Uses save_2d_histogram_sequence.
+    
+    Parameters: 
+    ----------
+    parent_path: string
+        Parent directory of the folders containing the 
+        Clean and Noise folders.
+        
+    noise_levels: list of floats
+        Noise levels to plot.
+        Default is [0.00, 0.01, 0.02, 0.03].
+        
+    variables: list of strings
+        Variable names to plot. 
+        Options include ['lambda', 'theta', 'distance', 'difference'].
+        Default is ['lambda', 'theta']. 
+        
+    animate: Boolean
+        If True, will animate each of the resulting sequences. 
+        Default is True. 
+        
+    Output:
+    ------
+    None
+    
+    Saves:
+    -----
+    Histogram sequences via save_2d_histogram_sequence.
     
     """
     
+    # Dictionaries for each of the parameters. 
     label_dict = {'lambda': r'$\lambda$', 'theta': r'$\theta$ [Degrees]', 'distance': 'Distance [Voxels]', 'difference': r'Difference [$\rho$]'}
     column_dict = {'lambda': 0, 'theta': 1, 'distance': 5, 'difference': 6}
     bin_dict = {'lambda': np.arange(0 - 0.05, 2 + 0.1, 0.1),
