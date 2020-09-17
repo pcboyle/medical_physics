@@ -526,6 +526,7 @@ def visualize_dict_sequences(data_dict, dict_keys = None, framerates = (1, 2, 4)
 
 def plot_shelf_check_plot(data_dict, data_key, plot_rows = 1, original_reference = 0, smooth_kernal = 0.5):
     """
+    
     """
     plt.close('all')
     
@@ -566,26 +567,6 @@ def plot_shelf_check_plot(data_dict, data_key, plot_rows = 1, original_reference
             
     plt.tight_layout()
     
-    return
-
-def plot_tube_check_plot(data_dict, data_key, plot_rows = 1, original_reference = [0], smooth_kernal = 0.5):
-    
-    if plot_rows == 1:
-        reference_tube_array = data_dict['data']['reference']
-        comparison_tube_array = data_dict['data']['comparison']
-        
-        plot_tube_2_panel(reference_tube_array, comparison_tube_array, value_max = np.max(original_reference), 
-                          z_slice = 0, fig_dim = 6, left_label = 'Clean reference', right_label = 'Comparison')
-    
-    else:
-        tube_1 = data_dict['data']['reference']
-        tube_2 = data_dict['data']['comparison']
-        tube_3 = data_dict['data']['smooth_reference']
-        tube_4 = data_dict['data']['smooth_comparison']
-        
-        plot_tube_4_panel(tube_1, tube_2, tube_3, tube_4, z_slice = 0, fig_dim = 6, xy_axis_lims = [np.min(original_reference) - 0.05, np.max(original_reference) + 0.05], 
-                          axes_labels = ['Reference\nNoise = {0}\nUnsmooth'.format(data_key), 'Comparison\nNoise = {0}\nUnsmooth'.format(data_key), 
-                                         'Reference\nNoise = {0}\nSmooth = {1}'.format(data_key, smooth_kernal), 'Comparison\nNoise = {0}\nSmooth = {1}'.format(data_key, smooth_kernal)])
     return
 
 def plot_shelf_sequence(array_3d, cmap = 'viridis', origin = 'upper', vmin = None, vmax = None, cbar_label = r'$\lambda$', 
@@ -712,15 +693,110 @@ def plot_tube_slice_profile(tube_array, z_slice = 0, fig_dim = 6, wings = True):
         ax.set_yticks(tick_list)
         plt.tight_layout()        
     
-    return 
+    return
 
-def plot_tube_2_panel(tube_reference, tube_comparison, value_max = 1, z_slice = 0, fig_dim = 6, left_label = 'Reference', right_label = 'Comparison'):
+def plot_tube_check_plot(data_dict, data_key, plot_rows = 1, original_reference = [0], smooth_kernal = 0.5):
     """
+    Function to save a tube check plot. Used in utilities.auto_lambda function. 
+    
+    Can plot either a 2 panel arranged in 1 row with 2 columns or a 4 panel with 2 rows and 2 columns. 
+    Uses plot_tube_2_panel or plot_tube_4_panel, respectively. 
+    
+    Does not save plot. Plot can be saved using plt.savefig(<plot_name>).
+    
+    Parameters:
+    ----------
+    data_dict: dictionary
+        Dictionary containing the reference and comparison information, 
+        in practice this is the dictionary for a specific noise level. 
+        
+    data_key: string
+        Key for the selected dictionary. Functions as an axis label. 
+        
+    plot_rows: int
+        Number of rows to plot. 
+        Default is 1. 
+        
+    original_reference: Numpy array
+        Original reference array. Used for finding the axis limits. 
+        Default is [0].
+        
+    smooth_kernal: float
+        Smoothing kernal size. 
+        Default is 0.5. 
+        
+    Outputs:
+    -------
+    None
+    
+    Saves:
+    -----
+    None
+    
+    """
+    
+    if plot_rows == 1:
+        reference_tube_array = data_dict['data']['reference']
+        comparison_tube_array = data_dict['data']['comparison']
+        
+        plot_tube_2_panel(reference_tube_array, comparison_tube_array, value_max = np.max(original_reference), 
+                          z_slice = 0, fig_dim = 6, left_label = 'Clean reference', right_label = 'Comparison')
+    
+    else:
+        tube_1 = data_dict['data']['reference']
+        tube_2 = data_dict['data']['comparison']
+        tube_3 = data_dict['data']['smooth_reference']
+        tube_4 = data_dict['data']['smooth_comparison']
+        
+        plot_tube_4_panel(tube_1, tube_2, tube_3, tube_4, z_slice = 0, fig_dim = 6, xy_axis_lims = [np.min(original_reference) - 0.05, np.max(original_reference) + 0.05], 
+                          axes_labels = ['Reference\nNoise = {0}\nUnsmooth'.format(data_key), 'Comparison\nNoise = {0}\nUnsmooth'.format(data_key), 
+                                         'Reference\nNoise = {0}\nSmooth = {1}'.format(data_key, smooth_kernal), 'Comparison\nNoise = {0}\nSmooth = {1}'.format(data_key, smooth_kernal)])
+    return
+
+def plot_tube_2_panel(tube_reference, tube_comparison, value_max = 1, z_slice = 0, subplot_dim = 6, left_label = 'Reference', right_label = 'Comparison'):
+    """
+    Function to plot a 2 panel tube check plot. 
+    
+    Parameters:
+    ----------
+    tube_reference: Numpy array
+        Reference tube array. 
+        
+    tube_comparison: Numpy aarray
+        Comparison tube array.
+        
+    value_max: float or int
+        Max value for color map. 
+        Default is 1.
+        
+    z_slice: int
+        Slice to plot. 
+        Default is 0. 
+        
+    subplot_dim: float or int
+        Dimension of the rows and columns. 
+        Default is 6. 
+        
+    left_label: string
+        Label for the left subplot. 
+        Default is 'Reference'.
+        
+    right_label: string
+        Label for the right subplot.
+        Default is 'Comparison'.
+        
+    Outputs:
+    -------
+    None
+    
+    Saves:
+    -----
+    None
     """
     
     plt.close('all')
     
-    fig = plt.figure(figsize = (fig_dim * 2, fig_dim))
+    fig = plt.figure(figsize = (subplot_dim * 2, subplot_dim))
     
     tube_cross_section_dim = int(np.shape(tube_reference)[0])
     
@@ -735,7 +811,7 @@ def plot_tube_2_panel(tube_reference, tube_comparison, value_max = 1, z_slice = 
     
     circle_slice_positions = np.array(range(0, np.shape(tube_reference)[0]))
     
-    gs = fig.add_gridspec(2, 4,  width_ratios=(fig_dim/4, fig_dim, fig_dim, fig_dim/4), height_ratios=(fig_dim/4, fig_dim),
+    gs = fig.add_gridspec(2, 4,  width_ratios=(subplot_dim/4, subplot_dim, subplot_dim, subplot_dim/4), height_ratios=(subplot_dim/4, subplot_dim),
                           left=0.0, right=1.0, bottom=0.0, top=1.0,
                           wspace=0.0, hspace=0.0)
     
@@ -808,7 +884,7 @@ def plot_tube_2_panel(tube_reference, tube_comparison, value_max = 1, z_slice = 
     
     return 
 
-def plot_tube_4_panel(tube_1, tube_2, tube_3, tube_4, z_slice = 0, fig_dim = 6, xy_axis_lims = [-0.05, 1.05], wing_type = 'scatter', 
+def plot_tube_4_panel(tube_1, tube_2, tube_3, tube_4, z_slice = 0, subplot_dim = 6, xy_axis_lims = [-0.05, 1.05], wing_type = 'scatter', 
                       axes_labels = ['Unsmooth Reference', 'Unsmooth Comparison', 'Smooth Reference', 'Smooth Comparison'],
                       data_label = 'Value [AU]'):
     """
@@ -817,7 +893,7 @@ def plot_tube_4_panel(tube_1, tube_2, tube_3, tube_4, z_slice = 0, fig_dim = 6, 
 
     plt.close('all')
 
-    fig = plt.figure(figsize = (fig_dim * 2, fig_dim * 2))
+    fig = plt.figure(figsize = (subplot_dim * 2, subplot_dim * 2))
     
     tube_cross_section_dim = int(np.shape(tube_1)[0])
     
@@ -857,7 +933,7 @@ def plot_tube_4_panel(tube_1, tube_2, tube_3, tube_4, z_slice = 0, fig_dim = 6, 
     
     circle_slice_positions = np.array(range(0, tube_cross_section_dim))
     
-    gs = fig.add_gridspec(4, 4,  width_ratios=(fig_dim/4, fig_dim, fig_dim, fig_dim/4), height_ratios=(fig_dim/4, fig_dim, fig_dim, fig_dim/4),
+    gs = fig.add_gridspec(4, 4,  width_ratios=(subplot_dim/4, subplot_dim, subplot_dim, subplot_dim/4), height_ratios=(subplot_dim/4, subplot_dim, subplot_dim, subplot_dim/4),
                           left=0.0, right=1.0, bottom=0.0, top=1.0,
                           wspace=0.0, hspace=0.0)
     
@@ -1130,7 +1206,7 @@ def update_4_panel_tube(tube_1, tube_2, tube_3, tube_4, panel_axes_data,
     
     return
 
-def setup_4_panel_tube(data_shape = (20, 20), fig_dim = 6, xy_axis_lims = [-0.05, 1.05], xy_axis_ticklist = [0, 0.5, 1.0], wing_type = 'scatter', 
+def setup_4_panel_tube(data_shape = (20, 20), subplot_dim = 6, xy_axis_lims = [-0.05, 1.05], xy_axis_ticklist = [0, 0.5, 1.0], wing_type = 'scatter', 
                        axes_labels = ['Unsmooth Reference', 'Unsmooth Comparison', 'Smooth Reference', 'Smooth Comparison'],
                        data_label = 'Value [AU]', frame_text = 'TEXT', cmap = cm.m_fire):
     """
@@ -1141,9 +1217,9 @@ def setup_4_panel_tube(data_shape = (20, 20), fig_dim = 6, xy_axis_lims = [-0.05
     
     plt.close('all')
 
-    fig = plt.figure(figsize = (fig_dim * 2, fig_dim * 2))
+    fig = plt.figure(figsize = (subplot_dim * 2, subplot_dim * 2))
     
-    gs = fig.add_gridspec(4, 4,  width_ratios=(fig_dim/4, fig_dim, fig_dim, fig_dim/4), height_ratios=(fig_dim/4, fig_dim, fig_dim, fig_dim/4),
+    gs = fig.add_gridspec(4, 4,  width_ratios=(subplot_dim/4, subplot_dim, subplot_dim, subplot_dim/4), height_ratios=(subplot_dim/4, subplot_dim, subplot_dim, subplot_dim/4),
                           left=0.05, right=0.95, bottom=0.05, top=0.95,
                           wspace=0.0, hspace=0.0)
     
@@ -1381,19 +1457,57 @@ def setup_4_panel_tube(data_shape = (20, 20), fig_dim = 6, xy_axis_lims = [-0.05
     else:
         return fig, [main_axes_data, x_projection_data, y_projection_data], frame_text_list
 
-def save_4_panel_tube_sequence(loaded_file_list, plot_dir, t_start = time.time(), file_prefix = 'lambda', fig_dim = 6,
-                               wing_type = 'scatter', max_diffs = [-1, 0], **setup_kwargs):
+def save_4_panel_tube_sequence(loaded_file_list, plot_dir, t_start = time.time(), file_prefix = 'lambda', subplot_dim = 6,
+                               wing_type = 'scatter', def_dist = [-1, 0], **setup_kwargs):
     """
     Function to plot a 4 panel tube sequence along the 3rd axis (taken to be z-axis) of a set of 4
     3D arrays of the same shape. 
     
     Parameters:
     ----------
+    loaded_file_list: list 
+        List of 4 arrays to be plotted. 
+        
+    plot_dir: string
+        Plot output directory. 
+        
+    t_start: float
+        Time of start. Used to inform user of time elapsed. 
+        Default is current cpu clock time via time.time().
+        
+    file_prefix: string
+        File prefix to prepend to the saved images. 
+        Default is 'lambda'.
+        
+    subplot_dim: float or int
+        Subplot dimension of the figure. Final figure is 
+        2*subplot_dim by 2*subplot_dim. 
+        Default is 6.
+        
+    wing_type: string
+        Type of plot for each of the wing plots. 
+        Options are 'scatter' and 'line'. 
+        Default is 'scatter'.
+        
+    def_dist: list
+        Deflection distances between the x and y values of 
+        each tube and the axis of rotation. Format is [x, y]. 
+        Default is [-1, 0]. 
     
-    **setup_kwargs can contain:
-        fig_dim, xy_axis_lims = [0.1, 1.05], histogram = False, 
-        bottom_label = 'Smooth', top_label = 'Unsmooth', left_label = 'Reference', right_label = 'Comparison', 
-        data_label = 'Value [AU]'
+    **setup_kwargs: keyword parameters 
+        Parameters for setup_4_panel_tube not included by name. 
+        Includes:
+            subplot_dim, xy_axis_lims, histogram, bottom_label, 
+            top_label, left_label, right_label, data_label. 
+        See setup_4_panel_tube for more information. 
+        
+    Outputs:
+    -------
+    None
+    
+    Saves:
+    -----
+    Series of 4 panel plots. 
     
     """
     # Prefix, outdir checks. 
@@ -1415,8 +1529,8 @@ def save_4_panel_tube_sequence(loaded_file_list, plot_dir, t_start = time.time()
         # Frame shift as ref - comparison. 
         frame_shift = n_slices/2 - z_slice # Tubes are hardcoded to align at length/2, which is the same as n_slice/2. 
         
-        x_shift = frame_shift * max_diffs[0]/n_slices
-        y_shift = frame_shift * max_diffs[1]/n_slices
+        x_shift = frame_shift * def_dist[0]/n_slices
+        y_shift = frame_shift * def_dist[1]/n_slices
         frame_text = r'($\Delta$x, $\Delta$y, z) = ({0:.2f}, {1:.2f}, {2})'.format(x_shift, y_shift, z_slice)
         
         update_4_panel_tube(*loaded_file_list, panel_axes_data, z_slice, frame_text_list, frame_text, wing_type = wing_type)
