@@ -1103,114 +1103,76 @@ def plot_tube_4_panel(tube_1, tube_2, tube_3, tube_4, z_slice = 0, subplot_dim =
     
     return
 
-def update_4_panel_tube(tube_1, tube_2, tube_3, tube_4, panel_axes_data, 
-                        z_slice, frame_text_list, frame_text, wing_type = 'scatter'):
-    """
-    
-    """
-    tube_cross_section_dim = int(np.shape(tube_1)[0])
-    position_index = int(tube_cross_section_dim/2)
-    circle_slice_positions = np.array(range(0, tube_cross_section_dim))
-    
-    wing_type_list = ['line', 'scatter']
-    
-    if wing_type not in wing_type_list:
-        wing_type = 'line'
-    
-    tube_slice_1_x = tube_1[position_index, :, z_slice]
-    tube_slice_1_y = tube_1[:, position_index, z_slice]
-    
-    tube_slice_2_x = tube_2[position_index, :, z_slice]
-    tube_slice_2_y = tube_2[:, position_index, z_slice]
-    
-    tube_slice_3_x = tube_3[position_index, :, z_slice]
-    tube_slice_3_y = tube_3[:, position_index, z_slice]
-    
-    tube_slice_4_x = tube_4[position_index, :, z_slice]
-    tube_slice_4_y = tube_4[:, position_index, z_slice]
-        
-    if wing_type == 'scatter':
-        position_limits = [0, tube_cross_section_dim]
-        
-        tube_slice_1_x = tube_1[:,:,z_slice]
-        tube_slice_1_y = tube_1[:,:,z_slice]
-        
-        tube_slice_2_x = tube_2[:,:,z_slice]
-        tube_slice_2_y = tube_2[:,:,z_slice]
-        
-        tube_slice_3_x = tube_3[:,:,z_slice]
-        tube_slice_3_y = tube_3[:,:,z_slice]
-        
-        tube_slice_4_x = tube_4[:,:,z_slice]
-        tube_slice_4_y = tube_4[:,:,z_slice]
-        
-    main_axes = panel_axes_data[0]
-    x_projection_axis = panel_axes_data[1]
-    y_projection_axis = panel_axes_data[2]
-    
-    scatter_mean_data = []
-    scatter_min_data = []
-    scatter_max_data = []
-    
-    if wing_type == 'scatter':
-        scatter_mean_data = panel_axes_data[3] #[0, 1], [x, y]
-        scatter_min_data = panel_axes_data[4]
-        scatter_max_data = panel_axes_data[5]
-        
-    scatter_axis = [scatter_mean_data, scatter_min_data, scatter_max_data]
-    
-    main_axis_data = [tube_1[:,:,z_slice], tube_2[:,:,z_slice], tube_3[:,:,z_slice], tube_4[:,:,z_slice]]
-    x_projection_axis_data = [[circle_slice_positions, tube_slice_1_x], [circle_slice_positions, tube_slice_2_x],
-                              [circle_slice_positions, tube_slice_3_x], [circle_slice_positions, tube_slice_4_x]]
-    y_projection_axis_data = [[tube_slice_1_y, circle_slice_positions], [tube_slice_2_y, circle_slice_positions], 
-                              [tube_slice_3_y, circle_slice_positions], [tube_slice_4_y, circle_slice_positions]]
-    
-    for main_ax, main_data in zip(main_axes, main_axis_data):
-        main_ax.set_data(main_data)
-        
-    for axis_index, (x_axis_data, y_axis_data, x_axis, y_axis, s_axis_mean, s_axis_min, s_axis_max) in enumerate(zip(x_projection_axis_data, y_projection_axis_data, x_projection_axis, y_projection_axis, 
-                                                                                                                     scatter_mean_data, scatter_min_data, scatter_max_data)):
-        
-        if wing_type == 'line': # [x_projection_data, y_projection_data]
-            x_axis.set_data(*x_axis_data)
-            y_axis.set_data(*y_axis_data)
-        
-        elif wing_type == 'scatter': # [x_projection_data, y_projection_data, scatter_mean_data, scatter_min_data, scatter_max_data]
-            x_locs = x_axis_data[0]
-            x_vals = x_axis_data[1]
-            y_locs = y_axis_data[1]
-            y_vals = y_axis_data[0]
-            
-            loc_data = []
-            long_x_data = []
-            long_y_data = []
-            
-            for ax_slice in range(*position_limits):
-                loc_data.extend(x_locs)
-                long_x_data.extend(x_vals[ax_slice, :])
-                long_y_data.extend(y_vals[:, ax_slice])
-                
-            x_axis.set_data(loc_data, long_x_data)
-            y_axis.set_data(long_y_data, loc_data)
-            
-            s_axis_mean[0].set_data(x_locs, np.mean(x_vals, axis = 0))
-            s_axis_min[0].set_data(x_locs, np.min(x_vals, axis = 0))
-            s_axis_max[0].set_data(x_locs, np.max(x_vals, axis = 0))
-            
-            s_axis_mean[1].set_data(np.mean(y_vals, axis = 1), y_locs)
-            s_axis_min[1].set_data(np.min(y_vals, axis = 1), y_locs)
-            s_axis_max[1].set_data(np.max(y_vals, axis = 1), y_locs)
-    
-    for text in frame_text_list:
-        text.set_text('{0}'.format(frame_text))
-    
-    return
-
 def setup_4_panel_tube(data_shape = (20, 20), subplot_dim = 6, xy_axis_lims = [-0.05, 1.05], xy_axis_ticklist = [0, 0.5, 1.0], wing_type = 'scatter', 
                        axes_labels = ['Unsmooth Reference', 'Unsmooth Comparison', 'Smooth Reference', 'Smooth Comparison'],
                        data_label = 'Value [AU]', frame_text = 'TEXT', cmap = cm.m_fire):
     """
+    Function to set up the 4 panel tube plot. 
     
+    Final figure size is 2*subplot_dim by 2*subplot_dim of form:
+        [plot 1] [plot 2]
+        [plot 3] [plot 4]
+    
+    Parameters:
+    ----------
+    data_shape: tuple of ints
+        Shape of the data to be plotted. 
+        Default is (20, 20).
+        
+    subplot_dim: float or int
+        Dimension of the rows and columns. 
+        Default is 6. 
+        
+    xy_axis_lims: list of float or int
+        Limits for the color map and wing plots. 
+        Always a list of length 2. 
+        Default is [-0.05, 1.05].
+        
+    xy_axis_ticklist: list of float or int
+        Ticks to use for the wing plots. 
+        Always a list of length 3. 
+        Default is [0, 0.5, 1.0]. 
+        
+    wing_type: string
+        Type of plot for each of the wing plots. 
+        Options are 'scatter' and 'line'. 
+        Default is 'scatter'.
+        
+    axes_labels: list of strings
+        Label combinations for each of the plots. 
+        Always a list of 4 strings, applied in sequence. 
+        Default is ['Unsmooth Reference', 'Unsmooth Comparison', 
+                    'Smooth Reference', 'Smooth Comparison'].
+    
+    data_label: string
+        Label for the wing plot values. 
+        Default is 'Value [AU]'.
+        
+    frame_text: string
+        Placeholder text to apply to each of the 4 subplots. 
+        Default is 'TEXT'. 
+        
+    cmap: colormap
+        Colormap to apply to the images. 
+        Default is cm.m_fire. 
+        
+    Outputs:
+    -------
+    fig: Figure object
+        Created figure. 
+        
+    axis_data_list: list of axis objects
+        Created axis objects. 
+        
+    frame_text_list: list of Text objects
+        Created text objects. 
+        
+    All outputs are used in update_4_panel_tube function. 
+    
+    Saves:
+    -----
+    None. 
+        
     """
     
     # Set up figure. 
@@ -1453,15 +1415,125 @@ def setup_4_panel_tube(data_shape = (20, 20), subplot_dim = 6, xy_axis_lims = [-
         frame_text_list.append(frame_text)
     
     if wing_type == 'scatter':
-        return fig, [main_axes_data, x_projection_data, y_projection_data, scatter_mean_data, scatter_min_data, scatter_max_data], frame_text_list
+        axis_data_list = [main_axes_data, x_projection_data, y_projection_data, scatter_mean_data, scatter_min_data, scatter_max_data]
+        
     else:
-        return fig, [main_axes_data, x_projection_data, y_projection_data], frame_text_list
+        axis_data_list = [main_axes_data, x_projection_data, y_projection_data]
+        
+    return fig, axis_data_list, frame_text_list
+
+def update_4_panel_tube(tube_1, tube_2, tube_3, tube_4, panel_axes_data, 
+                        z_slice, frame_text_list, frame_text, wing_type = 'scatter'):
+    """
+    Function to update a 
+    """
+    tube_cross_section_dim = int(np.shape(tube_1)[0])
+    position_index = int(tube_cross_section_dim/2)
+    circle_slice_positions = np.array(range(0, tube_cross_section_dim))
+    
+    wing_type_list = ['line', 'scatter']
+    
+    if wing_type not in wing_type_list:
+        wing_type = 'line'
+    
+    tube_slice_1_x = tube_1[position_index, :, z_slice]
+    tube_slice_1_y = tube_1[:, position_index, z_slice]
+    
+    tube_slice_2_x = tube_2[position_index, :, z_slice]
+    tube_slice_2_y = tube_2[:, position_index, z_slice]
+    
+    tube_slice_3_x = tube_3[position_index, :, z_slice]
+    tube_slice_3_y = tube_3[:, position_index, z_slice]
+    
+    tube_slice_4_x = tube_4[position_index, :, z_slice]
+    tube_slice_4_y = tube_4[:, position_index, z_slice]
+        
+    if wing_type == 'scatter':
+        position_limits = [0, tube_cross_section_dim]
+        
+        tube_slice_1_x = tube_1[:,:,z_slice]
+        tube_slice_1_y = tube_1[:,:,z_slice]
+        
+        tube_slice_2_x = tube_2[:,:,z_slice]
+        tube_slice_2_y = tube_2[:,:,z_slice]
+        
+        tube_slice_3_x = tube_3[:,:,z_slice]
+        tube_slice_3_y = tube_3[:,:,z_slice]
+        
+        tube_slice_4_x = tube_4[:,:,z_slice]
+        tube_slice_4_y = tube_4[:,:,z_slice]
+        
+    main_axes = panel_axes_data[0]
+    x_projection_axis = panel_axes_data[1]
+    y_projection_axis = panel_axes_data[2]
+    
+    scatter_mean_data = []
+    scatter_min_data = []
+    scatter_max_data = []
+    
+    if wing_type == 'scatter':
+        scatter_mean_data = panel_axes_data[3] #[0, 1], [x, y]
+        scatter_min_data = panel_axes_data[4]
+        scatter_max_data = panel_axes_data[5]
+        
+    scatter_axis = [scatter_mean_data, scatter_min_data, scatter_max_data]
+    
+    main_axis_data = [tube_1[:,:,z_slice], tube_2[:,:,z_slice], tube_3[:,:,z_slice], tube_4[:,:,z_slice]]
+    x_projection_axis_data = [[circle_slice_positions, tube_slice_1_x], [circle_slice_positions, tube_slice_2_x],
+                              [circle_slice_positions, tube_slice_3_x], [circle_slice_positions, tube_slice_4_x]]
+    y_projection_axis_data = [[tube_slice_1_y, circle_slice_positions], [tube_slice_2_y, circle_slice_positions], 
+                              [tube_slice_3_y, circle_slice_positions], [tube_slice_4_y, circle_slice_positions]]
+    
+    for main_ax, main_data in zip(main_axes, main_axis_data):
+        main_ax.set_data(main_data)
+        
+    for axis_index, (x_axis_data, y_axis_data, x_axis, y_axis, s_axis_mean, s_axis_min, s_axis_max) in enumerate(zip(x_projection_axis_data, y_projection_axis_data, x_projection_axis, y_projection_axis, 
+                                                                                                                     scatter_mean_data, scatter_min_data, scatter_max_data)):
+        
+        if wing_type == 'line': # [x_projection_data, y_projection_data]
+            x_axis.set_data(*x_axis_data)
+            y_axis.set_data(*y_axis_data)
+        
+        elif wing_type == 'scatter': # [x_projection_data, y_projection_data, scatter_mean_data, scatter_min_data, scatter_max_data]
+            x_locs = x_axis_data[0]
+            x_vals = x_axis_data[1]
+            y_locs = y_axis_data[1]
+            y_vals = y_axis_data[0]
+            
+            loc_data = []
+            long_x_data = []
+            long_y_data = []
+            
+            for ax_slice in range(*position_limits):
+                loc_data.extend(x_locs)
+                long_x_data.extend(x_vals[ax_slice, :])
+                long_y_data.extend(y_vals[:, ax_slice])
+                
+            x_axis.set_data(loc_data, long_x_data)
+            y_axis.set_data(long_y_data, loc_data)
+            
+            s_axis_mean[0].set_data(x_locs, np.mean(x_vals, axis = 0))
+            s_axis_min[0].set_data(x_locs, np.min(x_vals, axis = 0))
+            s_axis_max[0].set_data(x_locs, np.max(x_vals, axis = 0))
+            
+            s_axis_mean[1].set_data(np.mean(y_vals, axis = 1), y_locs)
+            s_axis_min[1].set_data(np.min(y_vals, axis = 1), y_locs)
+            s_axis_max[1].set_data(np.max(y_vals, axis = 1), y_locs)
+    
+    for text in frame_text_list:
+        text.set_text('{0}'.format(frame_text))
+    
+    return
 
 def save_4_panel_tube_sequence(loaded_file_list, plot_dir, t_start = time.time(), file_prefix = 'lambda', subplot_dim = 6,
                                wing_type = 'scatter', def_dist = [-1, 0], **setup_kwargs):
     """
     Function to plot a 4 panel tube sequence along the 3rd axis (taken to be z-axis) of a set of 4
     3D arrays of the same shape. 
+    
+    Uses setup_4_panel_tube and update_4_panel_tube to reduce total number of redraws to be done. 
+    Saves using fig.canvas.print_figure(plot_path, facecolor = 'white', edgecolor = 'white').
+    This reduces the time to produce the plots dramatically. 
     
     Parameters:
     ----------
