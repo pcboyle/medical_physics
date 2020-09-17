@@ -2067,7 +2067,32 @@ def save_multiple_histogram_sequences(parent_path, noise_levels = [0.00, 0.01, 0
 
 def plot_reference_volumes(vol_list, title_list, plot_dir):
     """
+    Function to save reference volumes produced in tube_auto_lambda
+    as a 6 panel plot with 2 rows and 3 columns. 
     
+    Format is:
+        [vol 1] [vol 2] [vol 3]
+        [vol 4] [vol 5] [vol 6]
+    
+    Parameters:
+    ----------
+    vol_list: list of arrays
+        List of 6 reference volumes for each subplot. 
+        
+    title_list: list of strings
+        List of 6 titles for each subplot. 
+        
+    plot_dir: string
+        Save directory for the plot. 
+        
+    Outputs:
+    -------
+    None
+    
+    Saves:
+    -----
+    volume_check.png: png image
+        Resulting volume check plot. 
     """ 
     
     vmin = np.min(vol_list[0])
