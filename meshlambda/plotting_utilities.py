@@ -1161,7 +1161,7 @@ def setup_4_panel_tube(data_shape = (20, 20), subplot_dim = 6, xy_axis_lims = [-
     fig: Figure object
         Created figure. 
         
-    axis_data_list: list of axis objects
+    panel_axes_data: list of axis objects
         Created axis objects. 
         
     frame_text_list: list of Text objects
@@ -1176,7 +1176,6 @@ def setup_4_panel_tube(data_shape = (20, 20), subplot_dim = 6, xy_axis_lims = [-
     """
     
     # Set up figure. 
-    
     plt.close('all')
 
     fig = plt.figure(figsize = (subplot_dim * 2, subplot_dim * 2))
@@ -1415,18 +1414,59 @@ def setup_4_panel_tube(data_shape = (20, 20), subplot_dim = 6, xy_axis_lims = [-
         frame_text_list.append(frame_text)
     
     if wing_type == 'scatter':
-        axis_data_list = [main_axes_data, x_projection_data, y_projection_data, scatter_mean_data, scatter_min_data, scatter_max_data]
+        panel_axes_data = [main_axes_data, x_projection_data, y_projection_data, scatter_mean_data, scatter_min_data, scatter_max_data]
         
     else:
-        axis_data_list = [main_axes_data, x_projection_data, y_projection_data]
+        panel_axes_data = [main_axes_data, x_projection_data, y_projection_data]
         
     return fig, axis_data_list, frame_text_list
 
 def update_4_panel_tube(tube_1, tube_2, tube_3, tube_4, panel_axes_data, 
                         z_slice, frame_text_list, frame_text, wing_type = 'scatter'):
     """
-    Function to update a 
+    Function to update a 4 panel tube plot that has been setup by setup_4_panel_tube. 
+    Only modifies the existing figure. 
+    
+    Parameters:
+    ----------
+    tube_1: Numpy array
+        3D array for use in plot 1. 
+        
+    tube_2: Numpy array
+        3D array for use in plot 2. 
+        
+    tube_2: Numpy array
+        3D array for use in plot 2. 
+        
+    tube_2: Numpy array
+        3D array for use in plot 2. 
+        
+    panel_axes_data: list of axes objects
+        Axes objects produced by setup_4_panel_tube.
+        
+    z_slice: int
+        Slice to plot. 
+        
+    frame_text_list: list of Text objects
+        Text objects produced by setup_4_panel_tube.
+        
+    frame_text: string
+        Text to update the frame text to. 
+        
+    wing_type: string
+        Type of plot for each of the wing plots. 
+        Options are 'scatter' and 'line'. 
+        Default is 'scatter'.
+        
+    Outputs:
+    -------
+    None
+    
+    Saves:
+    -----
+    None
     """
+    
     tube_cross_section_dim = int(np.shape(tube_1)[0])
     position_index = int(tube_cross_section_dim/2)
     circle_slice_positions = np.array(range(0, tube_cross_section_dim))
