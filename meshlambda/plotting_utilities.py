@@ -1,10 +1,3 @@
-"""
-Written by: Peter Boyle
-Purpose: Plotting tools for 5DCT image validation.
-Last edited: September 14, 2020
-"""
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import AxesGrid
