@@ -1667,7 +1667,74 @@ def plot_2d_histogram(x_data, y_data, x_label = 'X Data', y_label = 'Y Data', bi
                       x_ticks = None, x_ticklabels = None, y_ticks = None, y_ticklabels = None, 
                       cbar_label = 'Counts', image_text = None, image_title = 'Histogram'):
     """
-    I want this function to take in data and produce 2D histograms.     
+    Function to plot a 2D histogram. 
+    
+    Uses np.histogram2d.
+    
+    Parameters:
+    ----------
+    x_data: Numpy array
+        2D array for the x direction. 
+        
+    y_data: Numpy array
+        2D array for the y direction. 
+        
+    x_label: string
+        X axis label. 
+        Default is 'X Data'.
+        
+    y_label: string
+        Y axis label. 
+        Default is 'Y Data'.
+        
+    bins: int or list conforming to histogram function
+        Number of bins or bin edges for each of the dimensions. 
+        Default is 10. 
+        
+    vmax: float or int
+        Maximum value of the colormap. 
+        Default is 25.
+        
+    x_ticks: None or list
+        List of tick locations for the x axis. 
+        If None, no ticks will be drawn. 
+        Default is None. 
+        
+    x_ticklabels: None or list
+        List of tick labels for the x axis. 
+        If None, no ticks will have labels. 
+        Default is None. 
+        
+    y_ticks: None or list
+        List of tick locations for the y axis. 
+        If None, no ticks will be drawn. 
+        Default is None. 
+        
+    y_ticklabels: None or list
+        List of tick labels for the y axis. 
+        If None, no ticks will have labels. 
+        Default is None. 
+        
+    cbar_label: string
+        Label of the colorbar. 
+        Default is 'Counts'. 
+        
+    image_text: None or string
+        Text to appear on the histogram. 
+        If None, no text will be applied. 
+        Default is None. 
+        
+    image_title: string
+        Title of the figure. 
+        Default is 'Histogram'.
+        
+    Outputs:
+    -------
+    None
+    
+    Saves:
+    ----- 
+    None
     
     """
 
