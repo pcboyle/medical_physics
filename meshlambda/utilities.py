@@ -1,9 +1,3 @@
-"""
-Written by: Peter Boyle
-Purpose: Tools for 5DCT image validation.
-Last edited: September 14, 2020
-"""
-
 import numpy as np
 import os
 import matplotlib.pyplot as plt
