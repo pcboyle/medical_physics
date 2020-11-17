@@ -524,10 +524,43 @@ def visualize_dict_sequences(data_dict, dict_keys = None, framerates = (1, 2, 4)
                 
     return
 
-def plot_shelf_check_plot(data_dict, data_key, plot_rows = 1, original_reference = 0, smooth_kernal = 0.5):
+def plot_shelf_check_plot(data_dict, data_key, plot_rows = 1, original_reference = [0], smooth_kernal = 0.5):
+    """
+    Function to plot a shelf check plot. 
+    
+    TODO: UPDATE FOR NEW VOLUME FORMATS
+    
+    Parameters:
+    ----------
+    data_dict: dictionary
+        Dictionary containing the reference and comparison information, 
+        in practice this is the dictionary for a specific noise level. 
+        
+    data_key: string
+        Key for the selected dictionary. Functions as an axis label. 
+        
+    plot_rows: int
+        Number of rows to plot. 
+        Default is 1. 
+        
+    original_reference: Numpy array
+        Original reference array. Used for finding the axis limits. 
+        Default is [0].
+        
+    smooth_kernal: float
+        Smoothing kernal size. 
+        Default is 0.5. 
+        
+    Outputs:
+    -------
+    None
+    
+    Saves:
+    -----
+    None
+        
     """
     
-    """
     plt.close('all')
     
     if plot_rows == 1:
@@ -573,6 +606,11 @@ def plot_shelf_sequence(array_3d, cmap = 'viridis', origin = 'upper', vmin = Non
                         cbar_label_loc = 0.5, x_axis_labels = ['y', 'x', 'x'], y_axis_labels = ['z', 'z', 'y'], 
                         axis_text = ['x', 'y', 'z'], axis_labelsize = 20, axis_textsize = 15,
                         axis_text_loc = [80, 95], axis_textstroke = True, plot_dir = os.getcwd(), prefix = ''):
+    """
+    Function to plot a sequence of shelf slices. 
+    
+    TODO: UPDATE FOR NEW VOLUME FORMATS
+    """
     
     plot_dir = outdir_check(plot_dir)
     prefix, prefix_folder = prefix_check(prefix)
@@ -634,6 +672,35 @@ def plot_shelf_sequence(array_3d, cmap = 'viridis', origin = 'upper', vmin = Non
 
 def plot_tube_slice_profile(tube_array, z_slice = 0, fig_dim = 6, wings = True):
     """
+    Function to plot a single slice of a tube with optional wings. 
+    
+    Currently unused. 
+    
+    Paramters:
+    ---------
+    tube_array: Numpy array
+        3D array containing tube volume. 
+        
+    z_slice: int
+        Slice location. 
+        Default is 0.
+        
+    fig_dim: float or int
+        Dimension of the figure. 
+        Default is 6.
+        
+    wings: Boolean
+        If True, will plot a set of wings for x and y. 
+        Default is True. 
+        
+    Outputs:
+    -------
+    None
+    
+    Saves:
+    -----
+    None
+    
     """
     
     plt.close('all')
