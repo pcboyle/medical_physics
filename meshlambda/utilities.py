@@ -176,7 +176,6 @@ def write_log(log_name, log_dict, log_mode = 'w'):
         Log file specified above. 
     """    
     # Using with open() here to ensure the file is closed in the event of an error. 
-    # Using with open() here to ensure the file is closed in the event of an error. 
     with open(log_name, mode = log_mode) as _log:
     
         utc_datetime = datetime.datetime.utcnow()
